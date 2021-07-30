@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Combination</title>
+    <!-- stylesheet -->
+    <link rel="stylesheet" href="./tailwind.css">
+    <!-- alpin library -->
+    <!-- <script src="./assets/js/alpinjs/cdn.min"></script> -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+    
+<div class="flex justify-center h-screen  bg-gray-200" x-data="data()">
+    <div class="w-350p mt-24">
+        <p class="mb-2 text-xl font-bold">Please enter required info..</p>
+
+        <label> Enter the String </label>
+        <input x-model="inputString" class="block bg-white px-4 py-2 rounded" style="width: 100%;" placeholder="Enter string.."/>
+        <small class="text-red-500 block mb-4">Repeated characters and whitespace will be removed</small>
+        
+        <label class=""> Enter the value of count (r) </label>
+        <input style="width: 100%;" type="number" x-model="rCount" class="block bg-white px-4 py-2 rounded" placeholder="Enter the value of count.."/>
+        <small class="text-red-500 block mb-4" x-show="inputString.length < rCount" >Count value should be less than string length</small>
+
+        <div class="flex justify-end ">
+            <button x-on:click="callCombinations" class=" mt-4 px-2 py-2 bg-green-600 text-white rounded mt-2 " style="flex-basis: 100%;"> Submit </button>
+        </div>
+    </div>
+
+  
+    <div class="width400px mt-24 ml-6">
+        <p class="font-bold text-xl">Result:</p>
+        <p class="text-sm" x-text="'Final String: '+ inputString"></p>
+        <p class="text-sm" x-text="'Count value: '+ rCount"></p>
+        <p class="text-green-800" x-text="'Total: ' + combinationArray.length "></p>
+        <template x-for="item in combinationArray">
+            <p x-text="item"></p>
+        </template>
+      
+
+    </div>
+</div>
+
+
+<script>
+    function data() {
+        return {
+            inputString:"",
+            rCount: "",
+
+            //this code does note check for duplicate and whitespace character
+            //this array will save the combination results
+            combinationArray :[],
+
+            callCombinations(){
+                this.combinationArray = [];
+                this.removeOverheads();
+                if(this.rCount > this.inputString.length ) return;
+                this.combinations(this.inputString, this.rCount);
+            },
+            //total combination 2^n
+            combinations(elements, count) {
+                if (typeof elements == 'string') elements = elements.split('');
+                if (elements.length == 0) return [[]];
+
+                const firstElement = elements[0];
+                const restElement = elements.splice(1);
+
+                //recursive call
+                const combinationWithoutFirst = this.combinations(restElement);
+                const combinationWithFirst = [];
+
+                combinationWithoutFirst.forEach(elements => {
+                    const combWithFirst = [...elements, firstElement];
+                    combinationWithFirst.push(combWithFirst);
+                })
+
+                const a =  [...combinationWithoutFirst, ...combinationWithFirst].forEach(el => {
+                    if (el.length == count) this.combinationArray.push(el.join(''));
+                })
+                return [...combinationWithoutFirst, ...combinationWithFirst];
+            },
+            removeOverheads(){
+                const tempArray = [];
+                this.inputString.split('').forEach(n => {
+                    if (!tempArray.some(k => k == n) && n !== ' ' && n !== '\n') {
+                        tempArray.push(n);
+                    }
+                })
+                this.inputString = tempArray.join('');
+            }
+
+        }
+    }
+</script>
+
+
+</body>
+</html>
